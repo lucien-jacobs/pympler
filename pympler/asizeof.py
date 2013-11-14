@@ -1264,7 +1264,9 @@ try:
     from os import statvfs
     _typedef_both(type(statvfs(curdir)), refs=_statvfs_refs,  # statvfs_result
                                          item=_sizeof_Cvoidp, leng=_len)
-except ImportError:  # missing
+except (ImportError, OSError):  # missing
+    # statvfs is disabled on App Engine. Calling statvfs(curdir) above
+    # raises OSError(errno.ENOSYS, 'Function not implemented')
     pass
 
 try:
