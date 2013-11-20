@@ -162,11 +162,16 @@ from __future__ import generators  #PYCHOK for yield in Python 2.2
 from inspect    import isbuiltin, isclass, iscode, isframe, \
                        isfunction, ismethod, ismodule, stack
 from math       import log
-from os         import curdir, linesep
+from os         import curdir
 from struct     import calcsize  # type/class Struct only in Python 2.5+
+import os
 import sys
 import types    as     Types
 import weakref  as     Weakref
+
+# On Google App Engine <= 1.7.5, the sandboxed os module is missing linesep, so
+# fall back to '\n'
+linesep = getattr(os, 'linesep', '\n')
 
 __version__ = '5.10 (Dec 04, 2008)'
 __all__     = ['adict', 'asized', 'asizeof', 'asizesof',
