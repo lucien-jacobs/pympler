@@ -47,13 +47,16 @@ except ImportError:  # Python 2.5
     except ImportError:  # Python 2.5 without simplejson
         dumps = lambda s: unicode(s)
 
-try:
-    import Tkinter as tkinter
-except ImportError:  # Python 3.0
-    try:
-        import tkinter
-    except ImportError:
-        tkinter = None
+# KA(csilvers): We don't use tkinter (we don't use the pympler
+# refbrowser), and this causes a bizarre hang when running
+# "runtests.py -j2" on OS X mavericks.  The following small program
+# reproduces the hang:
+#    import multiprocessing, sqlite3, _tkinter
+#    def hang():
+#       sqlite3.connect('/tmp/foo')
+#    if __name__ == '__main__':
+#       multiprocessing.Pool(2).apply_async(hang, []).get(999)
+tkinter = None
 
 
 # Helper functions
