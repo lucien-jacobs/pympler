@@ -422,11 +422,11 @@ def _issubclass(sub, sup):
             pass
     return False
 
+_CELL_TYPE = type((lambda x: lambda: x)(None).func_closure[0])
+
 def _iscell(obj):
-    '''Return True if obj is a cell as used in a closure.'''
-    cell_producer = lambda x: (lambda: x)
-    cell_type = type(cell_producer(None).func_closure[0])
-    return isinstance(obj, cell_type)
+    '''Return True if obj is a 'cell' object as used in a closure.'''
+    return isinstance(obj, _CELL_TYPE)
 
 def _itemsize(t, item=0):
     '''Get non-zero itemsize of type.
