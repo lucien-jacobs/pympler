@@ -422,6 +422,12 @@ def _issubclass(sub, sup):
             pass
     return False
 
+def _iscell(obj):
+    '''Return True if obj is a cell as used in a closure.'''
+    cell_producer = lambda x: (lambda: x)
+    cell_type = type(cell_producer(None).func_closure[0])
+    return isinstance(obj, cell_type)
+
 def _itemsize(t, item=0):
     '''Get non-zero itemsize of type.
     '''
@@ -613,6 +619,9 @@ def _func_refs(obj, named):
     return _refs(obj, named, '__doc__', '__name__', '__code__',
                              pref='func_', excl=('func_globals',))
 
+def _cell_refs(obj, named):
+    return _refs(obj, named, 'cell_contents')
+
 def _gen_refs(obj, named):
     '''Return the referent(s) of a generator object.
     '''
@@ -686,6 +695,7 @@ def _weak_refs(obj, unused):  # named unused for PyChecker
 
 _all_refs = (None, _class_refs,   _co_refs,   _dict_refs,  _enum_refs,
                    _exc_refs,     _file_refs, _frame_refs, _func_refs,
+                   _cell_refs,
                    _gen_refs,     _im_refs,   _inst_refs,  _iter_refs,
                    _module_refs,  _prop_refs, _seq_refs,   _stat_refs,
                    _statvfs_refs, _tb_refs,   _type_refs,  _weak_refs)
@@ -1411,6 +1421,8 @@ def _typedef(obj, derive=False, infer=False):
         v.dup(kind=_kind_derived)
     elif _isdictclass(obj) or (infer and _infer_dict(obj)):
         v.dup(kind=_kind_inferred)
+    elif _iscell(obj):
+        v.set(item=_itemsize(t), refs=_cell_refs)
     elif getattr(obj, '__module__', None) in _builtin_modules:
         v.set(kind=_kind_ignored)
     else:  # assume an instance of some class
